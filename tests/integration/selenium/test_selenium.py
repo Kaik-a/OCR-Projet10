@@ -1,5 +1,6 @@
 """Selenium based tests"""
 from datetime import datetime
+import subprocess
 from uuid import uuid4
 
 from django.contrib.auth.models import User
@@ -26,7 +27,7 @@ class SeleniumBasedTestCase(LiveServerTestCase):
 
         self.driver = webdriver.Firefox(
             capabilities=caps,
-            firefox_binary="/usr/lib/firefox/firefox",
+            firefox_binary=subprocess.run(["which", "firefox"]).stdout,
         )
 
         self.driver.implicitly_wait(10)
