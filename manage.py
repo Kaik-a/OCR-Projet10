@@ -6,7 +6,7 @@ import sys
 
 def main():
     """Main method"""
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ocrProjet8.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
     try:
         # pylint: disable=import-outside-toplevel
         from django.core.management import execute_from_command_line

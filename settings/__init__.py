@@ -9,11 +9,12 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
-import django_heroku
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+BASE_DIR = os.path.dirname(
+    os.path.dirname(
+        os.path.abspath(__file__)
+    )
+)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -26,7 +27,7 @@ DEBUG = True
 
 ADMINS = [("admin", "pur.beurre.mbi@gmail.com")]  # change with your own address
 
-ALLOWED_HOSTS = [".localhost", "127.0.0.1", "[::1]"]
+ALLOWED_HOSTS = [".localhost", "127.0.0.1", "[::1]", "161.35.94.31"]
 
 # update following variables with your own informations
 EMAIL_SUBJECT_PREFIX = "[Contact]"
@@ -72,7 +73,11 @@ ROOT_URLCONF = "ocrProjet8.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": ["accounts/template", "catalog/template", "ocrProjet8/template"],
+        "DIRS": [
+            os.path.join(BASE_DIR, "accounts/template"),
+            os.path.join(BASE_DIR, "catalog/template"),
+            os.path.join(BASE_DIR, "ocrProjet8/template")
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -138,6 +143,3 @@ USE_TZ = False
 
 STATIC_ROOT = os.path.join(BASE_DIR, "ocrProjet8/static")
 STATIC_URL = os.path.join(BASE_DIR, "/staticfiles/")
-
-# Activate Django-Heroku
-django_heroku.settings(locals())

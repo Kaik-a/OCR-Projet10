@@ -1,4 +1,5 @@
 """Selenium based tests"""
+import subprocess
 from datetime import datetime
 from uuid import uuid4
 
@@ -24,9 +25,16 @@ class SeleniumBasedTestCase(LiveServerTestCase):
 
         self.user = User.objects.create_user(username="test1", password="test1@1234")
 
+        self.binaries = (
+            subprocess.run(
+                ["which", "firefox"], stdout=subprocess.PIPE, check=False
+            ).stdout.decode("utf8")[:-1]
+            or "/Applications/Applications/Firefox.app/Contents/MacOS/firefox-bin"  # noqa: W503
+        )
+
         self.driver = webdriver.Firefox(
             capabilities=caps,
-            firefox_binary="/usr/lib/firefox/firefox",
+            firefox_binary=self.binaries,
         )
 
         self.driver.implicitly_wait(10)
