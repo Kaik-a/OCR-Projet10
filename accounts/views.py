@@ -132,8 +132,7 @@ def sign_out(request) -> HttpResponse:
     logout(request)
 
     messages.add_message(request, 25, "Au revoir!")
-
-    logger.info(f"User {request['user'].id} deconnected")
+    logger.info(f"User {request.user.id} deconnected")
 
     return redirect(reverse("home"))
 

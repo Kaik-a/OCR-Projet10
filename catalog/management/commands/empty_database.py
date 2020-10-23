@@ -29,3 +29,5 @@ class Command(BaseCommand):
                 message = f"Error while emptying database - {error}"
                 logger.error(message)
                 raise CommandError(message) from error
+
+        self.stdout.write("Database correctly emptied", ending="")
