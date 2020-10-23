@@ -1,10 +1,14 @@
 """Command to populate the default database"""
+import logging
+
 from django.core.management.base import BaseCommand, CommandError
 
 from catalog.models import Category
 from catalog.populate import populate_categories, populate_product
 from scrapping.categories import get_categories
 from scrapping.products import get_products
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -22,30 +26,34 @@ class Command(BaseCommand):
 
             try:
                 categories = get_categories()
+                logger.info("Categories downloaded")
             except Exception as error:
-                raise CommandError(
-                    f"Error while scrapping categories- {error}"
-                ) from error
+                message = f"Error while scrapping categories- {error}"
+                logger.error(message)
+                raise CommandError(message) from error
 
             try:
                 populate_categories(categories)
+                logger.info("Categories inserted in db")
             except Exception as error:
-                raise CommandError(
-                    f"Error while populating categories- {error}"
-                ) from error
+                message = f"Error while populating categories- {error}"
+                logger.error(message)
+                raise CommandError(message) from error
 
             try:
                 products = get_products(
                     [category.name for category in Category.objects.all()]
                 )
+                logger.info("Products downloaded")
             except Exception as error:
-                raise CommandError(
-                    f"Error while scrapping products - {error}"
-                ) from error
+                message = f"Error while scrapping products - {error}"
+                logger.error(message)
+                raise CommandError(message) from error
 
             try:
                 populate_product(products)
+                logger.info("Products inserted in db")
             except Exception as error:
-                raise CommandError(
-                    f"Error while populating products - {error}"
-                ) from error
+                message = f"Error while populating products - {error}"
+                logger.error(message)
+                raise CommandError(message) from error

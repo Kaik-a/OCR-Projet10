@@ -6,15 +6,13 @@ https://docs.djangoproject.com/en/3.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
-
 import os
 
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(
-    os.path.dirname(
-        os.path.abspath(__file__)
-    )
-)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -76,7 +74,7 @@ TEMPLATES = [
         "DIRS": [
             os.path.join(BASE_DIR, "accounts/template"),
             os.path.join(BASE_DIR, "catalog/template"),
-            os.path.join(BASE_DIR, "ocrProjet8/template")
+            os.path.join(BASE_DIR, "ocrProjet8/template"),
         ],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -143,3 +141,13 @@ USE_TZ = False
 
 STATIC_ROOT = os.path.join(BASE_DIR, "ocrProjet8/static")
 STATIC_URL = os.path.join(BASE_DIR, "/staticfiles/")
+
+
+sentry_sdk.init(
+    dsn="https://f48177d43ab0454bbe2e494e77f5def1@o466057.ingest.sentry.io/5479819",
+    integrations=[DjangoIntegration()],
+    traces_sample_rate=1.0,
+    # If you wish to associate users to errors (assuming you are using
+    # django.contrib.auth) you may enable sending PII data.
+    send_default_pii=True,
+)

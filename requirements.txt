@@ -6,8 +6,10 @@ gunicorn==20.0.4
 pre-commit
 PSphinxTheme
 pyyaml
+raven
 requests
 selenium
+sentry_sdk
 sphinxcontrib_django
 ua-parser
 user-agent
