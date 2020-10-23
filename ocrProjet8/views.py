@@ -1,4 +1,6 @@
 """Views for ocrProjet8"""
+import logging
+
 from django.contrib import messages
 from django.core.mail import mail_admins
 from django.shortcuts import redirect, render
@@ -8,6 +10,8 @@ from catalog.models import Product
 from ocrProjet8.forms import ContactForm
 from search.forms import SearchForm
 from search.navbar_decorator import navbar_search_decorator
+
+logger = logging.getLogger(__name__)
 
 
 def home(request):
@@ -54,7 +58,7 @@ def contact(request):
                 )
                 return redirect(reverse("home"))
 
-            except TimeoutError:
+            except TimeoutError as error:
                 messages.add_message(
                     request,
                     40,
@@ -62,6 +66,7 @@ def contact(request):
                     "veuillez utilisez les informations de contact sur la page "
                     "d'accueil",
                 )
+                logger.error(f"Error while sending mail: {error}\nfrom {email}")
     else:
         form: ContactForm = ContactForm()
 

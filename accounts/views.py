@@ -1,4 +1,6 @@
 """Views for accounts"""
+import logging
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -11,6 +13,8 @@ from django.urls import reverse
 from search.navbar_decorator import navbar_search_decorator
 
 from .forms import LoginForm, SubscribeForm
+
+logger = logging.getLogger(__name__)
 
 
 def login_user(request, form: LoginForm) -> HttpResponse:
@@ -34,9 +38,12 @@ def login_user(request, form: LoginForm) -> HttpResponse:
         # A user exists with given credentials
         if user:
             login(request, user)
+
             messages.add_message(
                 request, 25, f"Bonjour {user.first_name}! Vous êtes maintenant connecté"
             )
+
+            logger.info(f"User {user.id} connected")
             return redirect(reverse("accounts:user_account"))
 
         # No user found
@@ -46,6 +53,7 @@ def login_user(request, form: LoginForm) -> HttpResponse:
             "Aucun compte recensé avec cette combinaison. Votre email ou mot de "
             "passe sont peut être incorrects?",
         )
+        logger.info(f"Failed connection with username {username}")
         return render(request, "login.html", {"form": form})
 
     return render(request, "login.html", {"form": form})
@@ -81,10 +89,12 @@ def subscribe(request) -> HttpResponse:
     if request.method == "POST":
         form = SubscribeForm(request.POST)
 
+        username = form.data.get("login")
+
         if form.is_valid():
             try:
                 User.objects.create_user(
-                    username=form.data.get("login"),
+                    username=username,
                     password=form.data.get("password"),
                     first_name=form.data.get("first_name"),
                     last_name=form.data.get("last_name"),
@@ -93,13 +103,15 @@ def subscribe(request) -> HttpResponse:
                 messages.add_message(
                     request,
                     25,
-                    f"L'utilisateur {form.data.get('login')} a bien été créé, "
+                    f"L'utilisateur {username} a bien été créé, "
                     f"vous pouvez dès à présent vous connecter",
                 )
+                logger.info(f"User {username} created")
             except IntegrityError as error:
                 messages.add_message(
                     request, 40, f"Echec lors de la création du compte: {error}"
                 )
+                logger.info(f"Error creating user {username}")
             form_connect = LoginForm()
 
             return redirect(reverse("accounts:login"), form=form_connect)
@@ -120,6 +132,9 @@ def sign_out(request) -> HttpResponse:
     logout(request)
 
     messages.add_message(request, 25, "Au revoir!")
+
+    logger.info(f"User {request['user'].id} deconnected")
+
     return redirect(reverse("home"))
 
 

@@ -1,7 +1,11 @@
 """Command to empty the default database"""
+import logging
+
 from django.core.management.base import BaseCommand, CommandError
 
 from catalog.models import Category, Favorite, Product
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -20,9 +24,8 @@ class Command(BaseCommand):
                 Category.objects.all().delete()
                 Product.objects.all().delete()
                 Favorite.objects.all().delete()
+                logger.info("Database correctly emptied")
             except Exception as error:
-                raise CommandError(
-                    f"Error while emptying database - {error}"
-                ) from error
-
-            self.stdout.write("Database correctly emptied", ending="")
+                message = f"Error while emptying database - {error}"
+                logger.error(message)
+                raise CommandError(message) from error
