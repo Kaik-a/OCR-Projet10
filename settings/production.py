@@ -7,7 +7,7 @@ from . import *
 
 DEBUG = False
 
-ALLOWED_HOSTS = ["161.35.94.31", "pur-beurre-mbi.site"]
+ALLOWED_HOSTS = ["161.35.94.31", "pur-beurre-mbi.site", "www.pur-beurre-mbi.site"]
 
 INSTALLED_APPS += [
     "raven.contrib.django.raven_compat",
@@ -66,7 +66,6 @@ LOGGING = {
 }
 
 # SECURITY
-SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
