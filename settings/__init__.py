@@ -6,12 +6,15 @@ https://docs.djangoproject.com/en/3.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
+import logging
 import os
 
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from sentry_sdk.integrations.logging import LoggingIntegration
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
@@ -142,10 +145,14 @@ USE_TZ = False
 STATIC_ROOT = os.path.join(BASE_DIR, "ocrProjet8/static")
 STATIC_URL = os.path.join(BASE_DIR, "/staticfiles/")
 
+sentry_logging = LoggingIntegration(
+    level=logging.INFO,  # Capture info and above as breadcrumbs
+    event_level=logging.ERROR,  # Send errors as events
+)
 
 sentry_sdk.init(
     dsn="https://f48177d43ab0454bbe2e494e77f5def1@o466057.ingest.sentry.io/5479819",
-    integrations=[DjangoIntegration()],
+    integrations=[DjangoIntegration(), sentry_logging],
     traces_sample_rate=1.0,
     # If you wish to associate users to errors (assuming you are using
     # django.contrib.auth) you may enable sending PII data.

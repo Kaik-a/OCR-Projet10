@@ -16,29 +16,7 @@ def populate_product(products: List) -> None:
     :param list products: List of products to insert in db.
     :rtype: None
     """
-    list_product: List[Product] = []
-    for product in products:
-        try:
-            # Create a product for each row in list
-            list_product.append(
-                Product(
-                    uuid4(),
-                    product.get("brands"),
-                    product.get("categories_tags"),
-                    [
-                        {key: value}
-                        for key, value in product.get("nutriments").items()
-                        # Verify nutriments are for 100g and part of nutriments dict
-                        if key.find("100g") != -1 and key[:-5] in NUTRIMENTS.keys()
-                    ],
-                    product.get("nutrition_grade_fr"),
-                    product.get("product_name_fr"),
-                    product.get("image_url"),
-                    product.get("url"),
-                )
-            )
-        except TypeError:
-            continue
+    list_product = prepare_products(products)
 
     for product_object in list_product:
         # Verify product's properties are all set
@@ -103,3 +81,37 @@ def save_favorite(
             ).save()
     except IntegrityError as error:
         print(error)
+
+
+def prepare_products(products: List) -> List[Product]:
+    """
+    Transform list to list of products
+
+    :param: list products: list of products to transform
+    :return: List[Product]
+    """
+    list_product: List[Product] = []
+    for product in products:
+        try:
+            # Create a product for each row in list
+            list_product.append(
+                Product(
+                    uuid4(),
+                    product.get("brands"),
+                    product.get("categories_tags"),
+                    [
+                        {key: value}
+                        for key, value in product.get("nutriments").items()
+                        # Verify nutriments are for 100g and part of nutriments dict
+                        if key.find("100g") != -1 and key[:-5] in NUTRIMENTS.keys()
+                    ],
+                    product.get("nutrition_grade_fr"),
+                    product.get("product_name_fr"),
+                    product.get("image_url"),
+                    product.get("url"),
+                )
+            )
+        except TypeError:
+            continue
+
+    return list_product
