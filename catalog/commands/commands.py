@@ -1,12 +1,14 @@
 """Commands for catalog"""
 import ast
 from datetime import datetime
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 from uuid import UUID
 
 from django.contrib.auth.models import User
+from django.db import IntegrityError
 
 from catalog.models import Favorite, Product
+from catalog.populate import prepare_products
 
 
 def get_better_products(base_product: Product) -> Tuple[List[Product], Product]:
@@ -73,3 +75,56 @@ def get_delete_info(product_id: UUID, user: User) -> Tuple[Favorite, str]:
     product_name = Product.objects.get(id=product_id).product_name_fr
 
     return to_delete, product_name
+
+
+def update_products(products: List) -> Dict:
+    """
+    Update the database's products
+
+    ;param List products: list of products
+    :return: Dict
+    """
+    list_product = prepare_products(products)
+    added_products = 0
+    updated_products = 0
+
+    for product in list_product:
+        if all(
+            [
+                product.brands,
+                product.categories_tags,
+                product.nutriments,
+                product.nutrition_grade_fr,
+                product.product_name_fr,
+                product.image_url,
+                product.url,
+            ]
+        ):
+            try:
+                product_db = Product.objects.get(
+                    product_name_fr=product.product_name_fr
+                )
+            except Product.DoesNotExist:
+                product_db = None
+
+            if product_db:
+                product_db.brands = product.brands
+                product_db.categories_tags = product.categories_tags
+                product_db.nutriments = product.categories_tags
+                product_db.nutrition_grade_fr = product.nutrition_grade_fr
+                product_db.image_url = product.image_url
+                product_db.url = product.url
+
+                try:
+                    product_db.save()
+                    updated_products += 1
+                except IntegrityError:
+                    continue
+            else:
+                try:
+                    product.save()
+                    added_products += 1
+                except IntegrityError:
+                    continue
+
+    return {"updated": updated_products, "added": added_products}
